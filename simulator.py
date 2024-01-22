@@ -19,6 +19,7 @@ from rate_profile import rateprofile
 from crclib import crc
 import csv
 
+coding = "Polar"        # Polar or PAC
 N = 2**6
 R = 0.5
 crc_len = 0             # Use 8,12,16 along with the corresponding crc_poly below  # Use 0 for no CRC. # It does not support 6, 9, 11, 24, etc.
@@ -29,7 +30,10 @@ designSNR = 2           # For instance for P(128,64):4, P(512,256):2
 profile_name = "dega"   # Use "rm-polar" for Read-Muller polar code construction, #"pw" for polarization weight construction, "bh"  for Bhattachariya parameter/bound construction.
 
 # For polar coding, set conv_gen = [1] which makes v=u meaninng no precoding.
-conv_gen = [1,0,1,1,0,1,1]      # Use [1] for polar codes 
+if coding == "Polar":  
+    conv_gen = [1]          # Use [1] for polar codes
+elif coding == "PAC":
+    conv_gen = [1,0,1,1,0,1,1] 
 
 snrb_snr = 'SNRb'       # 'SNRb':Eb/N0 or 'SNR':Es/N0
 modu = 'BPSK'           # It does not work for higher modulations
@@ -57,7 +61,7 @@ pcode = PolarCode(N, nonfrozen_bits, profile_name, L=list_size, rprofile=rprofil
 pcode.iterations = 10**7    # Maximum number of iterations if the errors found is less than err_cnt
 pcode.list_size_max = list_size_max
 
-print("PAC({0},{1}) constructed by {3}({4}dB)".format(N, nonfrozen_bits,crc_len,profile_name,designSNR))
+print("{0}({1},{2}) constructed by {3}({4}dB)".format(coding, N, nonfrozen_bits,crc_len,profile_name,designSNR))
 print("L={} & c={}".format(list_size,conv_gen))
 print("BER & FER evaluation is started")
 
@@ -95,7 +99,10 @@ for snr in snr_range:
         if isCRCinc:
             message = np.append(message, crc1.crcCalc(message))
 
-        x = pcode.pac_encode(message, conv_gen, mem, systematic)
+        if coding == "Polar":
+            x = pcode.encode(message, systematic)
+        elif coding == "PAC":
+            x = pcode.pac_encode(message, conv_gen, mem, systematic)
         
         modulated_x = ch.modulate(x)
         y = ch.add_noise(modulated_x)
@@ -140,14 +147,14 @@ for snr in snr_range:
 
 
 #Filename for saving the results
-result.fname += "PAC({0},{1}),L{2},m{3}".format(N, pcode.nonfrozen_bits,list_size,mem)
+result.fname += "{0}({1},{2}),L{3},m{4}".format(coding, N, pcode.nonfrozen_bits,list_size,mem)
 if isCRCinc:
     result.fname += ",CRC{0}".format(crc_len)
     
 #Writing the resuls in file
 with open(result.fname + ".csv", 'w') as f:
-    result.label = "PAC({0}, {1})\nL={2}\nRate-profile={3}\ndesign SNR={4}\n" \
-                "Conv Poly={5}\nCRC={6} bits, Systematic={7}\n".format(N, pcode.nonfrozen_bits,
+    result.label = "{0}({1}, {2})\nL={3}\nRate-profile={4}\ndesign SNR={5}\n" \
+                "Conv Poly={6}\nCRC={7} bits, Systematic={8}\n".format(coding, N, pcode.nonfrozen_bits,
                 pcode.list_size, profile_name, designSNR, conv_gen, crc_len, systematic)
     f.write(result.label)
 
