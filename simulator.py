@@ -34,7 +34,7 @@ conv_gen = [1,0,1,1,0,1,1]      # Use [1] for polar codes
 snrb_snr = 'SNRb'       # 'SNRb':Eb/N0 or 'SNR':Es/N0
 modu = 'BPSK'           # It does not work for higher modulations
 
-snr_range = np.arange(3,6,0.5) # in dB, (start,endpoint+step,step)
+snr_range = np.arange(3,5.5,0.5) # in dB, (start,endpoint+step,step)
 err_cnt = 50            # The number of error counts for each SNR point, for convergence, choose larger counts for low SNR regimes and for short codes.
 
 systematic = False
