@@ -23,7 +23,7 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-no_samples_total = 1200000
+no_samples_total = 4800000
 # N = 2**6
 Ns = 2**np.arange(8, 13, 1)
 no_Ns = len(Ns)
