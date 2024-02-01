@@ -23,7 +23,11 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-no_samples_total = 4800000
+trainortest = 'test'
+if trainortest == 'train':
+    no_samples_total = 4800000
+else:
+    no_samples_total = 240000
 # N = 2**6
 Ns = 2**np.arange(8, 13, 1)
 no_Ns = len(Ns)
@@ -145,8 +149,12 @@ for i in range(no_Ns):
 
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
-with open('dataset_polar.pkl', 'wb') as f:
-    pickle.dump(dataset_polar, f)
+if trainortest == 'train':
+    with open('dataset_polar.pkl', 'wb') as f:
+        pickle.dump(dataset_polar, f)
+else:
+    with open('dataset_polar_test.pkl', 'wb') as f:
+        pickle.dump(dataset_polar, f)
 # sio保存
 # sio.savemat('dataset_polar.mat', {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s})
 # h5py保存
