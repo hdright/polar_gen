@@ -23,7 +23,7 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-trainortest = 'test'
+trainortest = 'train'
 if trainortest == 'train':
     no_samples_total = 4800000
 else:
