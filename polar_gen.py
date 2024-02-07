@@ -23,11 +23,13 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-trainortest = 'train'
+trainortest = 'test'
 if trainortest == 'train':
     no_samples_total = 4800000
+    snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
 else:
     no_samples_total = 240000
+    snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
 # N = 2**6
 Ns = 2**np.arange(8, 13, 1)
 no_Ns = len(Ns)
@@ -55,7 +57,6 @@ elif coding == "PAC":
 snrb_snr = 'SNRb'       # 'SNRb':Eb/N0 or 'SNR':Es/N0
 modu = 'BPSK'           # It does not work for higher modulations
 
-snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
 no_snrs = len(snr_range)
 err_cnt = 50            # The number of error counts for each SNR point, for convergence, choose larger counts for low SNR regimes and for short codes.
 
