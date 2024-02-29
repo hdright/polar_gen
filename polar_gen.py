@@ -23,13 +23,15 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-trainortest = 'test'
+trainortest = 'train'
 if trainortest == 'train':
     no_samples_total = 4800000
-    snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
+    # snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
+    snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
 else:
     no_samples_total = 240000
-    snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
+    # snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
+    snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
 # N = 2**6
 Ns = 2**np.arange(8, 13, 1)
 no_Ns = len(Ns)
@@ -151,10 +153,10 @@ for i in range(no_Ns):
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
 if trainortest == 'train':
-    with open('dataset_polar.pkl', 'wb') as f:
+    with open('dataset_polar_s%d_%d.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
         pickle.dump(dataset_polar, f)
 else:
-    with open('dataset_polar_test.pkl', 'wb') as f:
+    with open('dataset_polar_test_s%d_%d.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
         pickle.dump(dataset_polar, f)
 # sio保存
 # sio.savemat('dataset_polar.mat', {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s})
