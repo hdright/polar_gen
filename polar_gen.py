@@ -47,7 +47,8 @@ list_size_max = 2**5    # For adaptive two-stage list decoding to accelerate the
 designSNR = 0           # For instance for P(128,64):4, P(512,256):2
 # designSNRs = *
 # profile_name = "dega"   # Use "rm-polar" for Read-Muller polar code construction, #"pw" for polarization weight construction, "bh"  for Bhattachariya parameter/bound construction.
-profile_names = ["pw", "bh"] 
+# profile_names = ["pw", "bh"] 
+profile_names = ["bh"] 
 no_profile_names = len(profile_names)
 
 # For polar coding, set conv_gen = [1] which makes v=u meaninng no precoding.
@@ -62,7 +63,7 @@ modu = 'BPSK'           # It does not work for higher modulations
 no_snrs = len(snr_range)
 err_cnt = 50            # The number of error counts for each SNR point, for convergence, choose larger counts for low SNR regimes and for short codes.
 
-systematic = False
+systematic = True
 
 # Error Coefficient-reduced: For code modifcation by X number of rows in G_N
 # The maximum number of row modifications, you can choose 2 as well. If you increase it, the error coefficient might get betetr but the BLER may not. 
@@ -153,10 +154,10 @@ for i in range(no_Ns):
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
 if trainortest == 'train':
-    with open('dataset_polar_s%d_%d.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
+    with open('dataset_polar_s%d_%d_sys_bh.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
         pickle.dump(dataset_polar, f)
 else:
-    with open('dataset_polar_test_s%d_%d.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
+    with open('dataset_polar_test_s%d_%d_sys_bh.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
         pickle.dump(dataset_polar, f)
 # sio保存
 # sio.savemat('dataset_polar.mat', {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s})
