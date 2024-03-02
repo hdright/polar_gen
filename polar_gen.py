@@ -23,7 +23,7 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-trainortest = 'train'
+trainortest = 'test'
 if trainortest == 'train':
     no_samples_total = 4800000
     # snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
