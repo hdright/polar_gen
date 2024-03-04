@@ -23,20 +23,37 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-trainortest = 'test'
+reco_mode = 'length'
+trainortest = 'train'
 if trainortest == 'train':
     no_samples_total = 4800000
-    # snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
-    snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
+    snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
+    # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
 else:
     no_samples_total = 240000
-    # snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
-    snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
+    snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
+    # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
 # N = 2**6
 Ns = 2**np.arange(8, 13, 1)
 no_Ns = len(Ns)
-no_samples_per_N = no_samples_total//no_Ns
-no_samples_Ns = [no_samples_per_N + (no_samples_total%no_Ns>i) for i in range(no_Ns)]
+if reco_mode == 'length':
+    # 计算每种码长应分配的样本数，使得每种码长的所有样本的总长度相等
+    # 总长度是固定的，由于总长度 = 码长 * 样本数，我们希望所有码长的总长度相等
+    # 因此，每种码长分配的样本数与码长成反比
+
+    # 码长的倒数
+    inverse_Ns = 1 / Ns
+
+    # 确定比例因子，使得总样本长度等于no_samples_total
+    # 因为总样本长度 = sum(样本数 * 码长) = 固定比例 * sum(码长的倒数 * 码长) = 固定比例 * len(Ns)
+    # 所以固定比例 = no_samples_total / len(Ns)
+    factor = no_samples_total / np.sum(inverse_Ns)
+
+    # 计算每种码长分配的样本数
+    no_samples_Ns = (inverse_Ns * factor).astype(int)
+else:
+    no_samples_per_N = no_samples_total//no_Ns
+    no_samples_Ns = [no_samples_per_N + (no_samples_total%no_Ns>i) for i in range(no_Ns)]
 # R = 0.5
 Rs = np.arange(1, 8, 1)/8
 no_Rs = len(Rs)
@@ -47,8 +64,8 @@ list_size_max = 2**5    # For adaptive two-stage list decoding to accelerate the
 designSNR = 0           # For instance for P(128,64):4, P(512,256):2
 # designSNRs = *
 # profile_name = "dega"   # Use "rm-polar" for Read-Muller polar code construction, #"pw" for polarization weight construction, "bh"  for Bhattachariya parameter/bound construction.
-# profile_names = ["pw", "bh"] 
-profile_names = ["bh"] 
+profile_names = ["pw", "bh"] 
+# profile_names = ["bh"] 
 no_profile_names = len(profile_names)
 
 # For polar coding, set conv_gen = [1] which makes v=u meaninng no precoding.
@@ -154,10 +171,10 @@ for i in range(no_Ns):
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
 if trainortest == 'train':
-    with open('dataset_polar_s%d_%d_sys_bh.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
+    with open('dataset_polar_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 else:
-    with open('dataset_polar_test_s%d_%d_sys_bh.pkl' % (snr_range[0], snr_range[-1]), 'wb') as f:
+    with open('dataset_polar_test_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 # sio保存
 # sio.savemat('dataset_polar.mat', {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s})
