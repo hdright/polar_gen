@@ -23,8 +23,8 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-reco_mode = 'length'
-trainortest = 'train'
+reco_mode = 'rate'
+trainortest = 'test'
 if trainortest == 'train':
     no_samples_total = 4800000
     snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
@@ -34,7 +34,10 @@ else:
     snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
     # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
 # N = 2**6
-Ns = 2**np.arange(8, 13, 1)
+if reco_mode == 'rate':
+    Ns = 2**np.arange(8, 9, 1)
+else:
+    Ns = 2**np.arange(8, 13, 1)
 no_Ns = len(Ns)
 if reco_mode == 'length':
     # 计算每种码长应分配的样本数，使得每种码长的所有样本的总长度相等
