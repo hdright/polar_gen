@@ -23,8 +23,8 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-reco_mode = 'rate'
-trainortest = 'test'
+reco_mode = 'len'
+trainortest = 'train'
 if trainortest == 'train':
     no_samples_total = 4800000
     snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
@@ -39,7 +39,7 @@ if reco_mode == 'rate':
 else:
     Ns = 2**np.arange(8, 13, 1)
 no_Ns = len(Ns)
-if reco_mode == 'length':
+if reco_mode == 'len':
     # 计算每种码长应分配的样本数，使得每种码长的所有样本的总长度相等
     # 总长度是固定的，由于总长度 = 码长 * 样本数，我们希望所有码长的总长度相等
     # 因此，每种码长分配的样本数与码长成反比
@@ -58,7 +58,10 @@ else:
     no_samples_per_N = no_samples_total//no_Ns
     no_samples_Ns = [no_samples_per_N + (no_samples_total%no_Ns>i) for i in range(no_Ns)]
 # R = 0.5
-Rs = np.arange(1, 8, 1)/8
+if reco_mode == 'len':
+    Rs = np.array([1/8])
+else:
+    Rs = np.arange(1, 8, 1)/8
 no_Rs = len(Rs)
 crc_len = 0             # Use 8,12,16 along with the corresponding crc_poly below  # Use 0 for no CRC. # It does not support 6, 9, 11, 24, etc.
 crc_poly = 0xA5         # 0x1021 for crc_len=16  # 0xC06  for crc_len=12 # 0xA6  for crc_len=8
@@ -174,10 +177,10 @@ for i in range(no_Ns):
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
 if trainortest == 'train':
-    with open('dataset_polar_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+    with open('dataset_polar_s%d_%d_%s_sys_r0.125.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 else:
-    with open('dataset_polar_test_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+    with open('dataset_polar_test_s%d_%d_%s_sys_r0.125.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 # sio保存
 # sio.savemat('dataset_polar.mat', {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s})

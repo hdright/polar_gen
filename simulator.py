@@ -65,9 +65,17 @@ class BERFER():
 # N = Ns[0]
 # R = Rs[3]
 for N in Ns:
+    if N in [2**8]:
+        continue
     for R in Rs:
-        
+        if N == 2**9:
+            if R in [1/8, 2/8]:
+                continue
         for designSNR in designSNRs:
+            if N == 2**9:
+                if R == 3/8:
+                    if designSNR < 4:
+                        continue
             for profile_name in profile_names:
                 K = int(N*R)
                 nonfrozen_bits = K + crc_len
