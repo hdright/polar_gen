@@ -23,8 +23,8 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-reco_mode = 'len'
-trainortest = 'train'
+reco_mode = 'prate'
+trainortest = 'test'
 if trainortest == 'train':
     no_samples_total = 4800000
     snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
@@ -34,7 +34,7 @@ else:
     snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
     # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
 # N = 2**6
-if reco_mode == 'rate':
+if reco_mode in ['rate', 'prate']:
     Ns = 2**np.arange(8, 9, 1)
 else:
     Ns = 2**np.arange(8, 13, 1)
@@ -60,6 +60,8 @@ else:
 # R = 0.5
 if reco_mode == 'len':
     Rs = np.array([1/8])
+elif reco_mode == 'prate':
+    Rs = np.arange(1, 5, 1)/8
 else:
     Rs = np.arange(1, 8, 1)/8
 no_Rs = len(Rs)
