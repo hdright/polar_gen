@@ -23,7 +23,7 @@ from crclib import crc
 import pickle
 
 coding = "Polar"        # Polar or PAC
-reco_mode = 'prate'
+reco_mode = 'rate'
 trainortest = 'test'
 if trainortest == 'train':
     no_samples_total = 4800000
@@ -73,7 +73,7 @@ designSNR = 0           # For instance for P(128,64):4, P(512,256):2
 # designSNRs = *
 # profile_name = "dega"   # Use "rm-polar" for Read-Muller polar code construction, #"pw" for polarization weight construction, "bh"  for Bhattachariya parameter/bound construction.
 profile_names = ["pw", "bh"] 
-# profile_names = ["bh"] 
+# profile_names = ["pw"] 
 no_profile_names = len(profile_names)
 
 # For polar coding, set conv_gen = [1] which makes v=u meaninng no precoding.
@@ -179,10 +179,10 @@ for i in range(no_Ns):
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
 if trainortest == 'train':
-    with open('dataset_polar_s%d_%d_%s_sys_r0.125.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+    with open('dataset_polar_s%d_%d_%s_sys_r0.125_pw.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 else:
-    with open('dataset_polar_test_s%d_%d_%s_sys_r0.125.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+    with open('dataset_polar_test_s%d_%d_%s_sys_r0.125_pw.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 # sio保存
 # sio.savemat('dataset_polar.mat', {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s})
