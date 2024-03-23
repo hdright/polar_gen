@@ -22,13 +22,39 @@ from crclib import crc
 # import scipy.io as sio
 import pickle
 
+def distribute_samples_according_to_ratio(total_samples, no_snrs, ratios):
+    # 比例因子
+    total_ratio = sum(ratios)
+
+    # 计算每个类别应分配的样本数
+    samples_per_category = [total_samples * ratio // total_ratio for ratio in ratios]
+
+    # 分配后可能还有剩余的样本，因为用整数除法会丢失小数部分
+    # 将剩余的样本按比例分配，从比例最高的类别开始
+    residual_samples = total_samples - sum(samples_per_category)
+    for i in sorted(range(no_snrs), key=lambda x: -ratios[x]):
+        if residual_samples <= 0:
+            break
+        samples_per_category[i] += 1
+        residual_samples -= 1
+
+    return samples_per_category
+
+
 coding = "Polar"        # Polar or PAC
-reco_mode = 'rate'
-trainortest = 'test'
+reco_mode = 'prate'
+trainortest = 'train'
+if trainortest == 'train':
+    train_mode = 'ubzero'
+else:
+    train_mode = 'origin'
 if trainortest == 'train':
     no_samples_total = 4800000
     snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
     # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
+    if train_mode == 'ubzero':
+        no_samples_total = 240000 * 4
+        snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
 else:
     no_samples_total = 240000
     snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
@@ -146,9 +172,11 @@ for i in range(no_Ns):
             pcode.gen = conv_gen
             pcode.cur_state = [0 for i in range(mem)]
             log_M = 1   #M:modulation order
-
-            no_samples_per_snr = no_samples_profiles[k] // no_snrs
-            no_samples_snrs = [no_samples_per_snr + (no_samples_profiles[k]%no_snrs>l) for l in range(no_snrs)]
+            if train_mode == 'ubzero':
+                no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [5, 6, 7, 8] + [25] * (no_snrs - 4))
+            else:
+                no_samples_per_snr = no_samples_profiles[k] // no_snrs
+                no_samples_snrs = [no_samples_per_snr + (no_samples_profiles[k]%no_snrs>l) for l in range(no_snrs)]
             for l in range(no_snrs):
                 print("\nSNR={0} dB".format(snr_range[l]))
                 ber = 0
@@ -179,7 +207,7 @@ for i in range(no_Ns):
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
 if trainortest == 'train':
-    with open('dataset_polar_s%d_%d_%s_sys_r0.125_pw.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+    with open('dataset_polar_s%d_%d_%s_sys_n256_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 else:
     with open('dataset_polar_test_s%d_%d_%s_sys_r0.125_pw.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
