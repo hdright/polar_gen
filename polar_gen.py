@@ -42,7 +42,7 @@ def distribute_samples_according_to_ratio(total_samples, no_snrs, ratios):
 
 
 coding = "Polar"        # Polar or PAC
-reco_mode = 'prate'
+reco_mode = 'len'
 trainortest = 'train'
 if trainortest == 'train':
     train_mode = 'ubzero'
@@ -54,6 +54,8 @@ if trainortest == 'train':
     # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
     if train_mode == 'ubzero':
         no_samples_total = 240000 * 20
+        if reco_mode == 'len':
+            no_samples_total = 240000 * 10
         snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
 else:
     no_samples_total = 240000
@@ -207,7 +209,7 @@ for i in range(no_Ns):
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
 if trainortest == 'train':
-    with open('dataset_polar_s%d_%d_%s_sys_n256_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+    with open('dataset_polar_s%d_%d_%s_sys_r0.125_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
 else:
     with open('dataset_polar_test_s%d_%d_%s_sys_r0.125_pw.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
