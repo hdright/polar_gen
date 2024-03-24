@@ -53,7 +53,7 @@ if trainortest == 'train':
     snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
     # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
     if train_mode == 'ubzero':
-        no_samples_total = 240000 * 4
+        no_samples_total = 240000 * 20
         snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
 else:
     no_samples_total = 240000
