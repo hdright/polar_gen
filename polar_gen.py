@@ -54,8 +54,8 @@ if trainortest == 'train':
     # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
     if train_mode == 'ubzero':
         no_samples_total = 240000 * 20
-        if reco_mode == 'len':
-            no_samples_total = 240000 * 10
+        # if reco_mode == 'len':
+        #     no_samples_total = 240000 * 10
         snr_range = np.arange(0,13,1) # in dB, (start,endpoint+step,step)
 else:
     no_samples_total = 240000
@@ -176,6 +176,8 @@ for i in range(no_Ns):
             log_M = 1   #M:modulation order
             if train_mode == 'ubzero':
                 no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [5, 6, 7, 8] + [25] * (no_snrs - 4))
+                if reco_mode == 'len':
+                    no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [6, 7, 8, 9] + [25] * (no_snrs - 4))
             else:
                 no_samples_per_snr = no_samples_profiles[k] // no_snrs
                 no_samples_snrs = [no_samples_per_snr + (no_samples_profiles[k]%no_snrs>l) for l in range(no_snrs)]
