@@ -21,6 +21,7 @@ from crclib import crc
 # import h5py
 # import scipy.io as sio
 import pickle
+from multiprocessing import Pool
 
 def distribute_samples_according_to_ratio(total_samples, no_snrs, ratios):
     # 比例因子
@@ -132,6 +133,36 @@ class BERFER():
         self.ber = list()
         self.fer = list()
 
+class messageFactory:
+    def __init__(self, isCRCinc, K, crc1, coding, pcode, ch, systematic, conv_gen, mem):
+        self.isCRCinc = isCRCinc
+        self.K = K
+        self.crc1 = crc1
+        self.coding = coding
+        self.pcode = pcode
+        self.ch = ch
+        self.systematic = systematic
+        self.conv_gen = conv_gen
+        self.mem = mem
+
+
+    def __call__(self, i):
+        # Generating a K-bit binary pseudo-radom message
+        #np.random.seed(t)
+        message = np.random.randint(0, 2, size=self.K, dtype=int)
+        if self.isCRCinc:
+            message = np.append(message, self.crc1.crcCalc(message))
+
+        if self.coding == "Polar":
+            x = self.pcode.encode(message, self.systematic)
+        elif self.coding == "PAC":
+            x = self.pcode.pac_encode(message, self.conv_gen, self.mem, self.systematic)
+        
+        modulated_x = self.ch.modulate(x)
+        # y = ch.add_noise(modulated_x)
+        # samples_snr[t] = ch.add_noise(modulated_x)
+        return self.ch.add_noise(modulated_x)
+
 #crc_len = len(bin(crc_poly)[2:].zfill(len(bin(crc_poly)[2:])//4*4+(len(bin(crc_poly)[2:])%4>0)*4))
 no_diff_sam = no_Ns*no_Rs*no_profile_names*no_snrs
 # 创建大小为no_diff_sam的list
@@ -187,21 +218,26 @@ for i in range(no_Ns):
                 fer = 0
                 ch = channel(modu, snr_range[l], snrb_snr, (K / Ns[i])) 
                 samples_snr = np.zeros((no_samples_snrs[l], Ns[i]), dtype=int)
+                with Pool(10) as p:
+                    polarFactoryres = p.map(messageFactory(isCRCinc, K, crc1, coding, pcode, ch, systematic, conv_gen, mem), range(no_samples_snrs[l]))
                 for t in range(no_samples_snrs[l]):
-                    # Generating a K-bit binary pseudo-radom message
-                    #np.random.seed(t)
-                    message = np.random.randint(0, 2, size=K, dtype=int)
-                    if isCRCinc:
-                        message = np.append(message, crc1.crcCalc(message))
+                    samples_snr[t] = polarFactoryres[t]
+                del polarFactoryres
+                # for t in range(no_samples_snrs[l]):
+                #     # Generating a K-bit binary pseudo-radom message
+                #     #np.random.seed(t)
+                #     message = np.random.randint(0, 2, size=K, dtype=int)
+                #     if isCRCinc:
+                #         message = np.append(message, crc1.crcCalc(message))
 
-                    if coding == "Polar":
-                        x = pcode.encode(message, systematic)
-                    elif coding == "PAC":
-                        x = pcode.pac_encode(message, conv_gen, mem, systematic)
+                #     if coding == "Polar":
+                #         x = pcode.encode(message, systematic)
+                #     elif coding == "PAC":
+                #         x = pcode.pac_encode(message, conv_gen, mem, systematic)
                     
-                    modulated_x = ch.modulate(x)
-                    # y = ch.add_noise(modulated_x)
-                    samples_snr[t] = ch.add_noise(modulated_x)
+                #     modulated_x = ch.modulate(x)
+                #     # y = ch.add_noise(modulated_x)
+                #     samples_snr[t] = ch.add_noise(modulated_x)
                 dataset.append(samples_snr)
                 label_r[i*no_Rs*no_profile_names*no_snrs+j*no_profile_names*no_snrs+k*no_snrs+l] = Rs[j]
                 label_n[i*no_Rs*no_profile_names*no_snrs+j*no_profile_names*no_snrs+k*no_snrs+l] = Ns[i]
