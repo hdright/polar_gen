@@ -206,9 +206,10 @@ for i in range(no_Ns):
             pcode.cur_state = [0 for i in range(mem)]
             log_M = 1   #M:modulation order
             if train_mode == 'ubzero':
+                no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [6, 7, 8, 9] + [25] * (no_snrs - 4))
                 # no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [5, 6, 7, 8] + [25] * (no_snrs - 4))
-                # if reco_mode == 'len':
-                no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [6, 7, 8, 9, 10] + [25] * (no_snrs - 5))
+                if reco_mode == 'len':
+                    no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [6, 7, 8, 9, 10] + [25] * (no_snrs - 5))
             else:
                 no_samples_per_snr = no_samples_profiles[k] // no_snrs
                 no_samples_snrs = [no_samples_per_snr + (no_samples_profiles[k]%no_snrs>l) for l in range(no_snrs)]
