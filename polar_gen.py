@@ -44,7 +44,7 @@ def distribute_samples_according_to_ratio(total_samples, no_snrs, ratios):
 
 coding = "Polar"        # Polar or PAC
 reco_mode = 'type'
-trainortest = 'test'
+trainortest = 'train'
 if trainortest == 'train':
     train_mode = 'ubzero'
 else:
@@ -207,7 +207,8 @@ for i in range(no_Ns):
             log_M = 1   #M:modulation order
             if train_mode == 'ubzero':
                 # no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [6, 7, 8, 9] + [25] * (no_snrs - 4))
-                no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [5, 6, 7, 8] + [25] * (no_snrs - 4))
+                # no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [5, 6, 7, 8] + [25] * (no_snrs - 4))
+                no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [5, 6, 7, 8] + [10] * (no_snrs - 4))
                 if reco_mode == 'len':
                     no_samples_snrs = distribute_samples_according_to_ratio(no_samples_profiles[k], no_snrs, [6, 7, 8, 9, 10] + [25] * (no_snrs - 5))
             else:
@@ -256,7 +257,7 @@ if trainortest == 'train':
         with open('dataset_polar_s%d_%d_%s_sys_r0.125_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
             pickle.dump(dataset_polar, f)
     if reco_mode == 'type':
-        with open('dataset_polar_s%d_%d_%s_sys_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+        with open('dataset_polar_s%d_%d_%s_sys_ubzero_new_ratio.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
             pickle.dump(dataset_polar, f)
 else:
     with open('dataset_polar_test_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
