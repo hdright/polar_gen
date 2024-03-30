@@ -46,14 +46,14 @@ coding = "Polar"        # Polar or PAC
 reco_mode = 'type'
 trainortest = 'train'
 if trainortest == 'train':
-    train_mode = 'ubzero'
+    train_mode = 'bzero'
 else:
     train_mode = 'origin'
 if trainortest == 'train':
     no_samples_total = 4800000
     snr_range = np.arange(5,13,1) # in dB, (start,endpoint+step,step)
     # snr_range = np.arange(12,13,1) # in dB, (start,endpoint+step,step)
-    if train_mode == 'ubzero':
+    if train_mode == 'ubzero' or train_mode == 'bzero':
         no_samples_total = 240000 * 20
         # if reco_mode == 'len':
         #     no_samples_total = 240000 * 10
@@ -257,7 +257,7 @@ if trainortest == 'train':
         with open('dataset_polar_s%d_%d_%s_sys_r0.125_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
             pickle.dump(dataset_polar, f)
     if reco_mode == 'type':
-        with open('dataset_polar_s%d_%d_%s_sys_ubzero_new_ratio.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+        with open('dataset_polar_s%d_%d_%s_sys_bzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
             pickle.dump(dataset_polar, f)
 else:
     with open('dataset_polar_test_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
