@@ -43,10 +43,10 @@ def distribute_samples_according_to_ratio(total_samples, no_snrs, ratios):
 
 
 coding = "Polar"        # Polar or PAC
-reco_mode = 'type'
+reco_mode = 'prate'
 trainortest = 'train'
 if trainortest == 'train':
-    train_mode = 'bzero'
+    train_mode = 'ubzero'
 else:
     train_mode = 'origin'
 if trainortest == 'train':
@@ -101,7 +101,7 @@ list_size_max = 2**5    # For adaptive two-stage list decoding to accelerate the
 designSNR = 0           # For instance for P(128,64):4, P(512,256):2
 # designSNRs = *
 # profile_name = "dega"   # Use "rm-polar" for Read-Muller polar code construction, #"pw" for polarization weight construction, "bh"  for Bhattachariya parameter/bound construction.
-profile_names = ["pw", "bh"] 
+profile_names = ["pw", "dega"] 
 # profile_names = ["pw"] 
 no_profile_names = len(profile_names)
 
@@ -248,21 +248,21 @@ for i in range(no_Ns):
 
 # pickle保存
 dataset_polar = {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s}
-if trainortest == 'train':
-    if reco_mode == 'prate':
-        with open('dataset_polar_s%d_%d_%s_sys_n256_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
-            pickle.dump(dataset_polar, f)
-
-    if reco_mode == 'len':
-        with open('dataset_polar_s%d_%d_%s_sys_r0.125_ubzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
-            pickle.dump(dataset_polar, f)
-    if reco_mode == 'type':
-        with open('dataset_polar_s%d_%d_%s_sys_bzero.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
-            pickle.dump(dataset_polar, f)
-else:
-    with open('dataset_polar_test_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+# if trainortest == 'train':
+if reco_mode == 'prate':
+    with open('dataset_polar_%s_s%d_%d_%s_sys_n256_ubzero_pwga.pkl' % (trainortest, snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
         pickle.dump(dataset_polar, f)
-# sio保存
+
+if reco_mode == 'len':
+    with open('dataset_polar_%s_s%d_%d_%s_sys_r0.125_ubzero_pwga.pkl' % (trainortest, snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+        pickle.dump(dataset_polar, f)
+if reco_mode == 'type':
+    with open('dataset_polar_%s_s%d_%d_%s_sys_bzero_pwga.pkl' % (trainortest, snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+        pickle.dump(dataset_polar, f)
+# else:
+#     with open('dataset_polar_test_s%d_%d_%s_sys.pkl' % (snr_range[0], snr_range[-1], reco_mode), 'wb') as f:
+#         pickle.dump(dataset_polar, f)
+# # sio保存
 # sio.savemat('dataset_polar.mat', {'dataset':dataset, 'label_r':label_r, 'label_n':label_n, 'label_g':label_g, 'label_s':label_s})
 # h5py保存
 # with h5py.File('dataset.mat', 'w') as f:
