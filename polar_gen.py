@@ -43,7 +43,7 @@ def distribute_samples_according_to_ratio(total_samples, no_snrs, ratios):
 
 
 coding = "Polar"        # Polar or PAC
-reco_mode = 'prate'
+reco_mode = 'len'
 trainortest = 'train'
 if trainortest == 'train':
     train_mode = 'ubzero'
